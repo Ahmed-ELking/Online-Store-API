@@ -1,140 +1,208 @@
-### Build A Storefront Backend
+# Build A Storefront Backend v1.0.0
 
-This is a backend API build in Nodejs for an online store. It exposes a RESTful API that will be used by the frontend developer on the frontend.
+- This is a backend API build in Nodejs for an online store. It exposes a RESTful API that will be used by the frontend developer on the frontend.
+- The company stakeholders want to create an online storefront to showcase their great product ideas. Users need to be able to browse an index of all products and add products to an order that they can view in a cart page.
 
-The database schema and and API route information can be found in the REQUIREMENT.md
+The database schema and and API route information can be found  [here](REQUIREMENTS.md)
 
-### Installation Instructions
+- [x] API in main branch is v1.0.0 :heavy_check_mark:
+- [ ] API in branch update-v1.1.0 :x:
+
+## Installation Instructions
 This section contains all the packages used in this project and how to install them.
 
- npm install
+1. Clone the project to your local machine:
 
-### Packages
+```
+$ git clone https://github.com/Ahmed-ELking/Online-Store-API.git
+```
+2. Open the project
 
-Here are all the packages that I installed.
+```
+$ cd Online-Store-API
+```
+3. To install all packages:
+```
+ $ npm install
+```
+### Packages I used: 
 
-# express
-npm i  express 
-npm i -D @types/express
 
-# typescript
-npm i -D typescript
-npm i -D @types/node
+* express
 
-# nodemon
-npm i -D nodemon @types/nodemon
-npm i ts-node -g
+```
+$ npm i  express 
+$ npm i -D @types/express
 
-# dotenv
-npm i dotenv
-npm i -D @types/dotenv
+```
 
-# pg 
-npm i pg
-npm i -D @types/pg
+* typescript
 
-# postgres
-npm i postgres
+```
+$ npm i -D typescript
+$ npm i -D @types/node
 
-# db-migrate
-npm i -g db-migrate db-migrate-pg
-npm i -D @types/db-migrate
+```
 
-# cors
-npm i cors
-npm i -D @types/cors
+* nodemon
 
-# bcrypt
-npm i bcrypt 
-npm i -D @types/bcrypt
+```
+$ npm i -D nodemon @types/nodemon
+$ npm i ts-node -g
+```
 
-# jsonwebtoken
-npm i jsonwebtoken 
-npm i -D @types/jsonwebtoken
+* dotenv
+```
+$ npm i dotenv
+$ npm i -D @types/dotenv
+```
 
-# jasmine
-npm i -D jasmine jasmine-spec-reporter jasmine-ts @types/jasmine
+* pg
+``` 
+$ npm i pg
+$ npm i -D @types/pg
+```
 
-# supertest
-npm i -D supertest @types/supertest
+* postgres
+```
+$ npm i postgres
+```
+* db-migrate
+```
+$ npm i -g db-migrate db-migrate-pg
+$ npm i -D @types/db-migrate
+```
 
-# fs
-npm i fs
+* cors
+```
+$ npm i cors
+$ npm i -D @types/cors
+```
 
-### Set up Database
+* bcrypt
+```
+$ npm i bcrypt 
+$ npm i -D @types/bcrypt
+```
 
-# Create Databases
-We shall create the dev and test database.
+* jsonwebtoken
+```
+$ npm i jsonwebtoken 
+$ npm i -D @types/jsonwebtoken
+```
 
-# connect to the default postgres database as the server's root user psql -U postgres
-- In psql run the following commands to create a user:
+* jasmine
+```
+$ npm i -D jasmine jasmine-spec-reporter jasmine-ts @types/jasmine
+```
 
- CREATE USER full_stack_user WITH PASSWORD '123';
+* supertest
+```
+$ npm i -D supertest @types/supertest
+```
 
+* fs
+```
+$ npm i fs
+```
+## Set up Database
+
+### Create Databases
+
+We shall create the dev and test databases:
+
+- connect to the default postgres database as the server's root 
+```
+$ user psql -U postgres
+```
+- In psql run the following command to create a user:
+```
+ $ CREATE USER full_stack_user WITH PASSWORD '123';
+```
 
 - In psql run the following commands to create the dev and test database: 
+```
+$ CREATE DATABASE full_stack_dev;
 
-CREATE DATABASE full_stack_dev;
+$ CREATE DATABASE full_stack_dev_test;
+```
+- Connect to the databases and grant all privileges: 
 
-CREATE DATABASE full_stack_dev_test;
+1. Grant for dev database
 
-# Connect to the databases and grant all privileges: 
+```
+$ \c full_stack_dev
 
-Grant for dev database
+$ GRANT ALL PRIVILEGES ON DATABASE full_stack_dev TO full_stack_user;
+```
+2. Grant for test database
+```
+$ \c full_stack_dev_test
 
-\c full_stack_dev
+$ GRANT ALL PRIVILEGES ON DATABASE full_stack_dev_test TO full_stack_user;
+```
+### Migrate Database
 
-GRANT ALL PRIVILEGES ON DATABASE full_stack_dev TO full_stack_user;
-
-Grant for test database
-
-\c full_stack_dev_test
-
-GRANT ALL PRIVILEGES ON DATABASE full_stack_dev_test TO full_stack_user;
-
-# Migrate Database
 Navigate to the root directory and run the command below to migrate the database
 
-npm run up
+```
+$ npm run up
+```
 
+## Environment Variables Set up 
 
-### Environment Variables Set up 
+Bellow are the environmental variables that needs to be set in a .env file.
 
-Bellow are the environmental variables that needs to be set in a .env file. This is the default setting that I used for development, but you can change it to what works for you.
+```
+POSTGRES_HOST=
+POSTGRES_DB=
+POSTGRES_TEST_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+ENV=
+BCRYPT_PASSWORD=
+SALT_ROUNDS=
+TOKEN_SECRET=
+```
+## Start App
 
-POSTGRES_HOST=localhost
-POSTGRES_DB=full_stack_dev
-POSTGRES_TEST_DB=full_stack_dev_test
-POSTGRES_USER=full_stack_user
-POSTGRES_PASSWORD=123
-ENV=test
-BCRYPT_PASSWORD=your_secret_password
-SALT_ROUNDS=10
-TOKEN_SECRET=ahmed123
+```
+$ npm run start
+```
+ ### Running Ports
 
-### Start App
-
- npm run start
-
- # Running Ports
 After start up, the server will start on port 5000 and the database on port 5432
 
-# Endpoint Access
-All endpoints are described in the REQUIREMENT.md file.
+### Endpoint Access
 
-# Token and Authentication
+All endpoints are described [here](REQUIREMENTS.md)
+
+### Token and Authentication
+
 Tokens are passed along with the http header as
 
-Authorization   Bearer <token>
+```
+Authorization Bearer <token>
+```
+## Testing
 
-# Testing
-Run test with
+1. unit tests.
+2. Integration tests.
 
-npm run test
+* Run test with
+```
+$ npm run test
+```
+1. It sets the environment to test. 
+2. Migrates up tables for the test database.
+3. Run the test then migrate down all the tables for the test database.
+4. There is over than 70 testes to insure that the API without any issues.
 
-It sets the environment to test, migrates up tables for the test database, run the test then migrate down all the tables for the test database.
+## Building
 
-# Building 
 to transbile the typescripts files to js files in build file
 
-npm run build
+```
+$ npm run build
+```
+
