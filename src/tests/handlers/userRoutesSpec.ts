@@ -4,7 +4,7 @@ import app from '../../server';
 
 import { User, UserStore } from '../../models/user';
 
-// import Client from '../../database';
+import Client from '../../database';
 
 const store = new UserStore();
 
@@ -28,13 +28,13 @@ describe('User API Endpoints', () => {
         user.user_id  = createdUser.user_id;
     });
 
-    // afterAll(async () => {
-    //     // clean db
-    //     const conn = await Client.connect();
-    //     const sql = 'DELETE FROM users;';
-    //     await conn.query(sql);
-    //     conn.release();
-    // });
+    afterAll(async () => {
+        // clean db
+        const conn = await Client.connect();
+        const sql = 'DELETE FROM users;';
+        await conn.query(sql);
+        conn.release();
+    });
 
     describe('Test Authenticate methods', () => {
         it('should be able to authenticate to get token', async () => {
@@ -112,9 +112,9 @@ describe('User API Endpoints', () => {
                 .set('Authorization', `Bearer ${token}`)
                 .send({
                     user_id: user.user_id,
-                    user_name: 'mohammedelzanaty',
-                    first_name: 'Mohammed',
-                    last_name: 'Elzanaty',
+                    user_name: 'ahmedsaad',
+                    first_name: 'Ahmed',
+                    last_name: 'Saad',
                     email: user.email,
                     password_digest: user.password_digest,
                     user_address: user.user_address,
@@ -124,9 +124,9 @@ describe('User API Endpoints', () => {
 
             const { user_name, first_name, last_name,  email } = res.body.data;
             expect(email).toBe(user.email);
-            expect(user_name).toBe('mohammedelzanaty');
-            expect(first_name).toBe('Mohammed');
-            expect(last_name).toBe('Elzanaty');
+            expect(user_name).toBe('ahmedsaad');
+            expect(first_name).toBe('Ahmed');
+            expect(last_name).toBe('Saad');
         });
 
         it('should delete user', async () => {
@@ -136,7 +136,7 @@ describe('User API Endpoints', () => {
                 .set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(200);
             expect(res.body.data.user_id).toBe(user.user_id);
-            expect(res.body.data.user_name).toBe('mohammedelzanaty');
+            expect(res.body.data.user_name).toBe('ahmedsaad');
         });
     });
 });

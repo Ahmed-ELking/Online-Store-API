@@ -1,6 +1,6 @@
 import { User, UserStore } from '../../models/user';
 
-// import Client from '../../database';
+import Client from '../../database';
 
 const store = new UserStore();
 
@@ -48,12 +48,12 @@ describe('User Model', () => {
       userId = createdUser.user_id;
     });
 
-    // afterAll(async () => {
-    //   const conn = await Client.connect();
-    //   const sql = 'DELETE FROM users;';
-    //   await conn.query(sql);
-    //   conn.release();
-    // });
+    afterAll(async () => {
+      const conn = await Client.connect();
+      const sql = 'DELETE FROM users;';
+      await conn.query(sql);
+      conn.release();
+    });
 
     it('Create method should return a New User', async () => {
         createdUserTwo = await store.create({
@@ -72,8 +72,6 @@ describe('User Model', () => {
         first_name: 'Test',
         last_name: 'User',
         email: 'test2@test.com',
-        user_address: '18st Hadyak ELkoba',
-        phone: '+201001656801'
       } as User)
     });
 
@@ -103,7 +101,7 @@ describe('User Model', () => {
 
     it('Authenticate method should return null for wrong credentials', async () => {
       const authenticatedUser = await store.authenticate(
-        'mohammed@elzanaty.com',
+        'ahmed@saad.com',
         'fake-password'
       )
       expect(authenticatedUser).toBe(null);
@@ -113,8 +111,8 @@ describe('User Model', () => {
       const updatedUser = await store.update({
   user_id: userId as string,
   user_name: 'testUser Updated',
-  first_name: 'Mohammed',
-  last_name: 'Elzanaty',
+  first_name: 'Ahmed',
+  last_name: 'Saad',
   email: user.email,
   password_digest: user.password_digest,
   user_address: user.user_address,
@@ -122,8 +120,8 @@ describe('User Model', () => {
 });
       expect(updatedUser.user_id).toBe(userId as string);
       expect(updatedUser.user_name).toBe('testUser Updated');
-      expect(updatedUser.first_name).toBe('Mohammed');
-      expect(updatedUser.last_name).toBe('Elzanaty');
+      expect(updatedUser.first_name).toBe('Ahmed');
+      expect(updatedUser.last_name).toBe('Saad');
       expect(updatedUser.email).toBe(user.email);
     });
 

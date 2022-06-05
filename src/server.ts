@@ -24,7 +24,7 @@ import userRoutes from './handlers/userRoutes';
 // import dashboardRoutes from './services/dashboardRoutes';
 
 
-const port = config.port || 8000;
+const port = config.PORT || 8000;
 
 const app: express.Application = express();
 

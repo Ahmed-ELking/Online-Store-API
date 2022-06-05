@@ -85,12 +85,11 @@ export class UserStore {
 
             const connection = await Client.connect();
             
-            const sql =
-                'UPDATE users SET first_name=($2),last_name=($3), password_digest=($4), user_address=($5), phone=($6) WHERE user_id=($1) RETURNING user_id, user_name, first_name, last_name, email';
+            const sql ='UPDATE users SET user_name=($2), first_name=($3),last_name=($4), password_digest=($5), user_address=($6), phone=($7) WHERE user_id=($1) RETURNING user_id, user_name, first_name, last_name, email';
                 
             
         
-            const result = await connection.query(sql, [ u.user_id, u.first_name, u.last_name, hashPassword(u.password_digest), u.user_address, u.phone]);
+            const result = await connection.query(sql, [u.user_id, u.user_name, u.first_name, u.last_name, hashPassword(u.password_digest), u.user_address, u.phone]);
             
             connection.release();
             

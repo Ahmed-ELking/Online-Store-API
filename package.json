@@ -8,7 +8,7 @@
     "build": "npx tsc",
     "jasmine": "jasmine",
     "up": "npx db-migrate up",
-    "test": "ENV=test db-migrate --env test up && npm run build && npm run jasmine && db-migrate --env"//don't forget test reset
+    "test": "ENV=test db-migrate --env test up && npm run build && npm run jasmine && db-migrate --env test reset" 
   },
   "author": "",
   "license": "ISC",
