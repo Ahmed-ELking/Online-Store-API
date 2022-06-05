@@ -17,11 +17,11 @@ import config from './config';
 
 import userRoutes from './handlers/userRoutes';
 
-import productRoutes from './handlers/productRouts';
+// import productRoutes from './handlers/productRouts';
 
-import orderRoutes from './handlers/orderRoutes';
+// import orderRoutes from './handlers/orderRoutes';
 
-import dashboardRoutes from './services/dashboardRoutes';
+// import dashboardRoutes from './services/dashboardRoutes';
 
 
 const port = config.port || 8000;
@@ -55,9 +55,9 @@ app.get('/' ,(_req: Request, res: Response) => {
 
 
 userRoutes(app);
-productRoutes(app);
-orderRoutes(app);
-dashboardRoutes(app);
+// productRoutes(app);
+// orderRoutes(app);
+// dashboardRoutes(app);
 
 
 app.use(errorMiddleware);

@@ -12,6 +12,9 @@ export type User = {
     last_name: string;
     email: string;
     password_digest: string;
+    register_date?: Date;
+    user_address: string;
+    phone: string;
 }
 
 const hashPassword = (password_digest: string) => {
@@ -25,7 +28,7 @@ export class UserStore {
         try {
         
             const conn = await Client.connect();
-            const sql = 'SELECT user_id, user_name, first_name, last_name, email FROM users';
+            const sql = 'SELECT * FROM users';
     
             const result = await conn.query(sql);
     
@@ -40,7 +43,7 @@ export class UserStore {
     
     async show(id: string): Promise<User> {
         try {
-            const sql = 'SELECT user_name, first_name, last_name, email FROM users WHERE user_id=($1)';
+            const sql = 'SELECT user_name, first_name, last_name, email, user_address, phone FROM users WHERE user_id=($1)';
         
             const conn = await Client.connect();
     
@@ -61,9 +64,9 @@ export class UserStore {
         
             const conn = await Client.connect();
 
-            const sql = 'INSERT INTO users (user_name, first_name, last_name, email, password_digest) VALUES ($1,$2,$3,$4,$5) RETURNING user_id, user_name, first_name, last_name, email';
+            const sql = 'INSERT INTO users (user_name, first_name, last_name, email, password_digest, phone, user_address) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING user_id, user_name, first_name, last_name, email';
     
-            const result = await conn.query(sql, [u.user_name, u.first_name, u.last_name, u.email, hashPassword(u.password_digest)]);
+            const result = await conn.query(sql, [u.user_name, u.first_name, u.last_name, u.email, hashPassword(u.password_digest), u.phone, u.user_address]);
 
             const user = result.rows[0];
     
@@ -83,11 +86,11 @@ export class UserStore {
             const connection = await Client.connect();
             
             const sql =
-                'UPDATE users SET user_name=($2),first_name=($3),last_name=($4), password_digest=($5) WHERE user_id=($1) RETURNING user_id, user_name, first_name, last_name, email';
+                'UPDATE users SET first_name=($2),last_name=($3), password_digest=($4), user_address=($5), phone=($6) WHERE user_id=($1) RETURNING user_id, user_name, first_name, last_name, email';
                 
             
         
-            const result = await connection.query(sql, [ u.user_id, u.user_name, u.first_name, u.last_name, hashPassword(u.password_digest)]);
+            const result = await connection.query(sql, [ u.user_id, u.first_name, u.last_name, hashPassword(u.password_digest), u.user_address, u.phone]);
             
             connection.release();
             

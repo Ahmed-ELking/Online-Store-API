@@ -1,13 +1,6 @@
 import express, { Request, Response } from 'express';
 import { check, ValidationChain, Result, ValidationError, validationResult } from "express-validator";
 
-
-// id?: number;
-// user_name: string;
-// first_name: string;
-// last_name: string;
-// email: string;
-// password_digest: string;
 const createUserValidator = (): ValidationChain[] => [
     check('user_name')
         .notEmpty().withMessage('User name is required')
@@ -30,7 +23,13 @@ const createUserValidator = (): ValidationChain[] => [
         .withMessage('must contain a number')
         .not()
         .isIn(['123', 'password', 'god'])
-        .withMessage('Do not use a common word as the password')
+        .withMessage('Do not use a common word as the password'),
+    check('user_address')
+        .notEmpty().withMessage('User address is required'),
+    check('phone')
+        .notEmpty().withMessage('User phone is required')
+        .isMobilePhone('any', {strictMode: true})
+        .withMessage('The mobile phone number must be supplied with the country code and therefore must start with +'),
 ];
 
 const expressValidator = (req: Request): ValidationError[] => {

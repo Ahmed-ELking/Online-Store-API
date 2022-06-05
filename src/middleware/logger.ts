@@ -1,7 +1,5 @@
 import bunyan from 'bunyan';
 
-import fs from 'fs';
-
 import audit from 'express-requests-logger';
 
 const LoggerInstance = bunyan.createLogger({ name: 'Store Front Back End' });

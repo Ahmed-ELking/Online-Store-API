@@ -1,6 +1,6 @@
 import { User, UserStore } from '../../models/user';
 
-import Client from '../../database';
+// import Client from '../../database';
 
 const store = new UserStore();
 
@@ -38,6 +38,8 @@ describe('User Model', () => {
       first_name: 'Test',
       last_name: 'User',
       password_digest: 'test1234',
+      user_address: '18st Hadyak ELkoba',
+      phone: '+201001656801'
     }
     let userId: unknown ;
     let createdUserTwo: User;
@@ -46,12 +48,12 @@ describe('User Model', () => {
       userId = createdUser.user_id;
     });
 
-    afterAll(async () => {
-      const conn = await Client.connect();
-      const sql = 'DELETE FROM users;';
-      await conn.query(sql);
-      conn.release();
-    });
+    // afterAll(async () => {
+    //   const conn = await Client.connect();
+    //   const sql = 'DELETE FROM users;';
+    //   await conn.query(sql);
+    //   conn.release();
+    // });
 
     it('Create method should return a New User', async () => {
         createdUserTwo = await store.create({
@@ -60,6 +62,8 @@ describe('User Model', () => {
         last_name: 'User',
         email: 'test2@test.com',
         password_digest: 'test1234',
+        user_address: '18st Hadyak ELkoba',
+        phone: '+201001656801'
       } as User);
 
       expect(createdUserTwo).toEqual({
@@ -68,6 +72,8 @@ describe('User Model', () => {
         first_name: 'Test',
         last_name: 'User',
         email: 'test2@test.com',
+        user_address: '18st Hadyak ELkoba',
+        phone: '+201001656801'
       } as User)
     });
 
@@ -105,13 +111,15 @@ describe('User Model', () => {
 
     it('Update One method should return a user with edited attributes', async () => {
       const updatedUser = await store.update({
-        user_id: userId as string,
-        user_name: 'testUser Updated',
-        first_name: 'Mohammed',
-        last_name: 'Elzanaty',
-        email: user.email,
-        password_digest: user.password_digest
-      });
+  user_id: userId as string,
+  user_name: 'testUser Updated',
+  first_name: 'Mohammed',
+  last_name: 'Elzanaty',
+  email: user.email,
+  password_digest: user.password_digest,
+  user_address: user.user_address,
+  phone: user.phone
+});
       expect(updatedUser.user_id).toBe(userId as string);
       expect(updatedUser.user_name).toBe('testUser Updated');
       expect(updatedUser.first_name).toBe('Mohammed');
