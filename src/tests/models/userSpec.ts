@@ -37,15 +37,15 @@ describe('User Model', () => {
       user_name: 'testUser',
       first_name: 'Test',
       last_name: 'User',
-      password_digest: 'test1234',
-      user_address: '18st Hadyak ELkoba',
+      password: 'test1234',
+      address: '18st Hadyak ELkoba',
       phone: '+201001656801'
     }
     let userId: unknown ;
     let createdUserTwo: User;
     beforeAll(async () => {
       const createdUser = await store.create(user);
-      userId = createdUser.user_id;
+      userId = createdUser.id;
     });
 
     afterAll(async () => {
@@ -61,17 +61,16 @@ describe('User Model', () => {
         first_name: 'Test',
         last_name: 'User',
         email: 'test2@test.com',
-        password_digest: 'test1234',
-        user_address: '18st Hadyak ELkoba',
+        password: 'test1234',
+        address: '18st Hadyak ELkoba',
         phone: '+201001656801'
       } as User);
 
       expect(createdUserTwo).toEqual({
-        user_id: createdUserTwo.user_id,
+        id: createdUserTwo.id,
         user_name: 'test2User',
-        first_name: 'Test',
-        last_name: 'User',
         email: 'test2@test.com',
+        role: 'user'
       } as User)
     });
 
@@ -81,17 +80,15 @@ describe('User Model', () => {
     });
 
     it('Get One method should return testUser when called with ID', async () => {
-      const returnedUser = await store.show(createdUserTwo.user_id as string);
+      const returnedUser = await store.show(createdUserTwo.id as string);
       expect(returnedUser.user_name).toBe(createdUserTwo.user_name);
-      expect(returnedUser.first_name).toBe(createdUserTwo.first_name);
-      expect(returnedUser.last_name).toBe(createdUserTwo.last_name);
       expect(returnedUser.email).toBe(createdUserTwo.email);
     });
 
     it('Authenticate method should return the authenticated user', async () => {
       const authenticatedUser = await store.authenticate(
         user.email,
-        user.password_digest as string
+        user.password as string
       )
       expect(authenticatedUser?.user_name).toBe(user.user_name);
       expect(authenticatedUser?.first_name).toBe(user.first_name);
@@ -109,25 +106,23 @@ describe('User Model', () => {
 
     it('Update One method should return a user with edited attributes', async () => {
       const updatedUser = await store.update({
-  user_id: userId as string,
+  id: userId as string,
   user_name: 'testUser Updated',
   first_name: 'Ahmed',
   last_name: 'Saad',
   email: user.email,
-  password_digest: user.password_digest,
-  user_address: user.user_address,
+  password: user.password,
+  address: user.address,
   phone: user.phone
 });
-      expect(updatedUser.user_id).toBe(userId as string);
+      expect(updatedUser.id).toBe(userId as string);
       expect(updatedUser.user_name).toBe('testUser Updated');
-      expect(updatedUser.first_name).toBe('Ahmed');
-      expect(updatedUser.last_name).toBe('Saad');
       expect(updatedUser.email).toBe(user.email);
     });
 
     it('Delete One method should delete user from DB', async () => {
       const deletedUser = await store.delete(userId as string);
-      expect(deletedUser.user_id).toBe(userId as string);
+      expect(deletedUser.id).toBe(userId as string);
     });
   });
 });

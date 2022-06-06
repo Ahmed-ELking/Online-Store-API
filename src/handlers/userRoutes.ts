@@ -16,9 +16,9 @@ const index = async (_req: Request, res: Response, next: NextFunction) => {
     try {
         const users = await store.index();
         return res.json({
-            status: 'success',
+            statusCode: 200,
             data: users,
-            message: 'users retrieved successfully'
+            messageData: 'users retrieved successfully'
         });
     } catch (error) {
 
@@ -32,9 +32,9 @@ const show = async (req: Request, res: Response, next: NextFunction) => {
         
         const user = await store.show(req.params.id as unknown as string);
         return res.json({
-            status: 'success',
+            statusCode: 200,
             data: {...user},
-            message: 'user retrieved successfully'
+            messageData: 'user retrieved successfully'
         });
     } catch (error) {
 
@@ -47,11 +47,12 @@ const show = async (req: Request, res: Response, next: NextFunction) => {
 const create = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const newUser = await store.create(req.body);
+        const token = jwt.sign({ newUser }, config.tokenSecret as unknown as string);
 
         return res.json({
-            status: 'success',
-            data: { ...newUser },
-            message: 'User created successfully'
+            statusCode: 200,
+            data: { ...newUser, token },
+            messageData: 'User created successfully'
         });
         
     } catch (error) {
@@ -66,9 +67,9 @@ const update = async (req: Request, res: Response, next: NextFunction) => {
         const updateUser = await store.update(req.body);
 
         return res.json({
-            status: 'success',
+            statusCode: 200,
             data: {...updateUser},
-            message: 'User updated successfully'
+            messageData: 'User updated successfully'
         });
         
     } catch (error) {
@@ -82,9 +83,9 @@ const destroy = async (req: Request, res: Response, next: NextFunction) => {
         
         const user = await store.delete(req.params.id as unknown as string);
         return res.json({
-            status: 'success',
+            statusCode: 200,
             data: user,
-            message: 'user deleted successfully'
+            messageData: 'user deleted successfully'
         });
     } catch (error) {
         next(error);
@@ -95,22 +96,22 @@ const destroy = async (req: Request, res: Response, next: NextFunction) => {
 
 const authenticate = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const{ email, password_digest } = req.body;
+        const{ email, password } = req.body;
         
 
-        const user = await store.authenticate(email, password_digest);
+        const user = await store.authenticate(email, password);
         const token = jwt.sign({ user }, config.tokenSecret as unknown as string);
         if (!user) {
             return res.status(401).json({
-                status: 'error',
-                message: 'The user name and password do not match please try again'
+                statusCode: 200,
+                messageData: 'The user name and password do not match please try again'
             });
         } 
             
         return res.json({
-            status: 'success',
+            statusCode: 200,
             data: { ...user, token },
-            message: 'user authenticated successfully'
+            messageData: 'user authenticated successfully'
         });
         
         

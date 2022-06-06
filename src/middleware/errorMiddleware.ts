@@ -8,9 +8,9 @@ import { NextFunction, Request, Response } from 'express';
 }
 
 const errorMiddleware = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
-    const status = error.status || 500;
-    const message = error.message || 'Whoops!! something went wrong';
-    res.status(status).json({ status, message });
+    const statusCode = error.status || 500;
+    const messageData = error.message || 'Whoops!! something went wrong';
+    res.status(statusCode).json({ statusCode, messageData });
 }
 
 export { errorMiddleware, Error };

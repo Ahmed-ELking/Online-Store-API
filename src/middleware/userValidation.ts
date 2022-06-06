@@ -4,19 +4,19 @@ import { check, ValidationChain, Result, ValidationError, validationResult } fro
 const createUserValidator = (): ValidationChain[] => [
     check('user_name')
         .notEmpty().withMessage('User name is required')
-        .isAlpha('en-US', { ignore: ' ' })
+        .isAlpha('en-US', { ignore: '_' })
         .withMessage('name should be alphabetic characters'),
     check('first_name')
         .notEmpty().withMessage('First name is required')
-        .isAlpha('en-US', { ignore: ' ' })
+        .isAlpha('en-US', { ignore: '_' })
         .withMessage('First name should be alphabetic characters'),
     check('last_name')
         .notEmpty().withMessage('Last name is required')
-        .isAlpha('en-US', { ignore: ' ' })
+        .isAlpha('en-US', { ignore: '_' })
         .withMessage('Last name should be alphabetic characters'),
     check('email').notEmpty().withMessage('Email is required')
         .isEmail().withMessage('Input valid Email'),
-    check('password_digest').notEmpty().withMessage('Password is required')
+    check('password').notEmpty().withMessage('Password is required')
         .isLength({ min: 8, max: 16 })
         .withMessage('Password must be at least 8 characters and maximum 16 character ')
         .matches(/\d/)
@@ -24,7 +24,7 @@ const createUserValidator = (): ValidationChain[] => [
         .not()
         .isIn(['123', 'password', 'god'])
         .withMessage('Do not use a common word as the password'),
-    check('user_address')
+    check('address')
         .notEmpty().withMessage('User address is required'),
     check('phone')
         .notEmpty().withMessage('User phone is required')
@@ -47,7 +47,10 @@ const expressValidator = (req: Request): ValidationError[] => {
 const validationMiddleware = (req: Request, res: Response, next: express.NextFunction) => {
     const errors = expressValidator(req);
     if (errors.length) {
-        return res.status(400).json({ errors });
+        return res.status(400).json({
+            statusCode: 400,
+            messageData: errors[0].msg
+        });
     }
     next();
 }

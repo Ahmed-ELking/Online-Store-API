@@ -18,14 +18,14 @@ describe('User API Endpoints', () => {
         first_name: 'Test',
         last_name: 'User',
         email: 'test@test.com',
-        password_digest: 'test1234',
-        user_address: '18st Hadyak ELkoba ',
+        password: 'test1234',
+        address: '18st Hadyak ELkoba ',
         phone: '+201001656801'
     } as User;
 
     beforeAll(async () => {
         const createdUser = await store.create(user);
-        user.user_id  = createdUser.user_id;
+        user.id = createdUser.id;
     });
 
     afterAll(async () => {
@@ -43,11 +43,11 @@ describe('User API Endpoints', () => {
                 .set('Content-type', 'application/json')
                 .send({
                     email: 'test@test.com',
-                    password_digest: 'test1234',
+                    password: 'test1234',
                 });
             expect(res.status).toBe(200);
-            const { user_id, email, token: userToken } = res.body.data;
-            expect(user_id).toBe(user.user_id);
+            const { id, email, token: userToken } = res.body.data;
+            expect(id).toBe(user.id);
             expect(email).toBe('test@test.com');
             token = userToken;
         });
@@ -58,7 +58,7 @@ describe('User API Endpoints', () => {
                 .set('Content-type', 'application/json')
                 .send({
                     email: 'wrong@email.com',
-                    password_digest: 'test1234',
+                    password: 'test1234',
                 });
             expect(res.status).toBe(401);
         });
@@ -74,16 +74,15 @@ describe('User API Endpoints', () => {
                     first_name: 'TestTwo',
                     last_name: 'UserTwo',
                     email: 'test2@test.com',
-                    password_digest: 'test1234',
-                    user_address: '18st Hadyak ELkoba ',
+                    password: 'test1234',
+                    address: '18st Hadyak ELkoba ',
                     phone: '+201001656801'
                 } as User);
             expect(res.status).toBe(200);
-            const { user_name, first_name, last_name, email } = res.body.data;
+            const { user_name, email, role } = res.body.data;
             expect(email).toBe('test2@test.com');
             expect(user_name).toBe('testUserTwo');
-            expect(first_name).toBe('TestTwo');
-            expect(last_name).toBe('UserTwo');
+            expect(role).toBe('user');
         });
 
         it('should get list of users', async () => {
@@ -97,7 +96,7 @@ describe('User API Endpoints', () => {
 
         it('should get user info', async () => {
             const res = await request
-                .get(`/users/${user.user_id}`)
+                .get(`/users/${user.id}`)
                 .set('Content-type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(200);
@@ -107,35 +106,34 @@ describe('User API Endpoints', () => {
 
         it('should update user info', async () => {
             const res = await request
-                .patch(`/users/${user.user_id}`)
+                .patch(`/users/${user.id}`)
                 .set('Content-type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
                 .send({
-                    user_id: user.user_id,
+                    id: user.id,
                     user_name: 'ahmedsaad',
                     first_name: 'Ahmed',
                     last_name: 'Saad',
                     email: user.email,
-                    password_digest: user.password_digest,
-                    user_address: user.user_address,
+                    password: user.password,
+                    address: user.address,
                     phone: user.phone
                 });
             expect(res.status).toBe(200);
 
-            const { user_name, first_name, last_name,  email } = res.body.data;
+            const { user_name, role,  email } = res.body.data;
             expect(email).toBe(user.email);
             expect(user_name).toBe('ahmedsaad');
-            expect(first_name).toBe('Ahmed');
-            expect(last_name).toBe('Saad');
+            expect(role).toBe('user');
         });
 
         it('should delete user', async () => {
             const res = await request
-                .delete(`/users/${user.user_id}`)
+                .delete(`/users/${user.id}`)
                 .set('Content-type', 'application/json')
                 .set('Authorization', `Bearer ${token}`)
             expect(res.status).toBe(200);
-            expect(res.body.data.user_id).toBe(user.user_id);
+            expect(res.body.data.id).toBe(user.id);
             expect(res.body.data.user_name).toBe('ahmedsaad');
         });
     });

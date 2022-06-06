@@ -6,20 +6,21 @@ import Client from '../database';
 import config from '../config';
 
 export type User = {
-    user_id?: string;
+    id?: string;
     user_name: string;
     first_name: string;
     last_name: string;
     email: string;
-    password_digest: string;
+    password: string;
     register_date?: Date;
-    user_address: string;
+    address: string;
     phone: string;
+    role?: string;
 }
 
-const hashPassword = (password_digest: string) => {
+const hashPassword = (password: string) => {
     const salt = parseInt(config.salt as string, 10);
-    return bcrypt.hashSync(`${password_digest}${config.pepper}`, salt);
+    return bcrypt.hashSync(`${password}${config.pepper}`, salt);
 }
 
 export class UserStore {
@@ -43,7 +44,7 @@ export class UserStore {
     
     async show(id: string): Promise<User> {
         try {
-            const sql = 'SELECT user_name, first_name, last_name, email, user_address, phone FROM users WHERE user_id=($1)';
+            const sql = 'SELECT user_name, first_name, last_name, email, address, phone FROM users WHERE id=($1)';
         
             const conn = await Client.connect();
     
@@ -64,9 +65,9 @@ export class UserStore {
         
             const conn = await Client.connect();
 
-            const sql = 'INSERT INTO users (user_name, first_name, last_name, email, password_digest, phone, user_address) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING user_id, user_name, first_name, last_name, email';
+            const sql = 'INSERT INTO users (user_name, first_name, last_name, email, password, phone, address, role) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, user_name, email, role';
     
-            const result = await conn.query(sql, [u.user_name, u.first_name, u.last_name, u.email, hashPassword(u.password_digest), u.phone, u.user_address]);
+            const result = await conn.query(sql, [u.user_name, u.first_name, u.last_name, u.email, hashPassword(u.password), u.phone, u.address, 'user']);
 
             const user = result.rows[0];
     
@@ -85,11 +86,11 @@ export class UserStore {
 
             const connection = await Client.connect();
             
-            const sql ='UPDATE users SET user_name=($2), first_name=($3),last_name=($4), password_digest=($5), user_address=($6), phone=($7) WHERE user_id=($1) RETURNING user_id, user_name, first_name, last_name, email';
+            const sql ='UPDATE users SET user_name=($2), first_name=($3),last_name=($4), password=($5), address=($6), phone=($7) WHERE id=($1) RETURNING id, user_name, email, role';
                 
             
         
-            const result = await connection.query(sql, [u.user_id, u.user_name, u.first_name, u.last_name, hashPassword(u.password_digest), u.user_address, u.phone]);
+            const result = await connection.query(sql, [u.id, u.user_name, u.first_name, u.last_name, hashPassword(u.password), u.address, u.phone]);
             
             connection.release();
             
@@ -104,7 +105,7 @@ export class UserStore {
         try {
             const conn = await Client.connect();
             
-            const sql = 'DELETE FROM users WHERE user_id=($1) RETURNING user_id, user_name, first_name, last_name, email';
+            const sql = 'DELETE FROM users WHERE id=($1) RETURNING id, user_name, email, role';
         
             const result = await conn.query(sql, [id]);
     
@@ -121,21 +122,21 @@ export class UserStore {
 
     async authenticate(
         email: string,
-        password_digest: string): Promise<User | null> {
+        password: string): Promise<User | null> {
         
         try {
             const conn = await Client.connect();
 
-            const sql = 'SELECT password_digest FROM users WHERE email=($1)';
+            const sql = 'SELECT password FROM users WHERE email=($1)';
 
             const result = await conn.query(sql, [email]);
 
             if (result.rows.length) {
 
-                const { password_digest: hashPassword } = result.rows[0];
-                const isPasswordValid = bcrypt.compareSync(`${password_digest}${config.pepper}`, hashPassword);
+                const { password: hashPassword } = result.rows[0];
+                const isPasswordValid = bcrypt.compareSync(`${password}${config.pepper}`, hashPassword);
                 if (isPasswordValid) {
-                    const user = await conn.query('SELECT user_id, user_name, first_name, last_name, email FROM users WHERE email=($1)', [email]);
+                    const user = await conn.query('SELECT id, user_name, first_name, last_name, email FROM users WHERE email=($1)', [email]);
                     return user.rows[0];
                 }
             }

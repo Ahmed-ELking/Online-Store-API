@@ -19,9 +19,9 @@ components:
         - user_address
         - phone
       properties:
-        id:
-          format: UUID
-
+        user_id:
+          type: string
+          format: uuid
         user_name:
           type: string
           maxLength: 50
@@ -56,18 +56,178 @@ components:
         register_date:
           type: Date
           description: auto-generated current date of the user registration
+      #Does't show  
+      example:
+        email: ahm@yahoo.com
+        user_name: ahmedelking
+        first_name: "ahmed"
+        last_name: saad
+        password_digest: asssss1234
+        phone: +201001656805
+        user_address: 15 Shobra St,Cairo,Egypt
+
+  Error:
+    type: json object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+    
+
 
   securitySchemes:
     bearerAuth:        
       type: http
       scheme: bearer
       bearerFormat: JWT
+
   responses:
     UnauthorizedError:
-      description: Login error:please try again
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 401
+            message: Login error:please try again
+    
+    showUserError:
+      description: unable show user
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            status: 500
+            message: unable show user + Error
+    
+    createUserError:
+      description: unable create user
+      content:
+        application/json:
+          schema:
+            type: object
+              proprieties:
+                errors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      msg: 
+                        type: string
+                      param:
+                        type: string
+                      location:
+                        type: string
+                
+          example:
+            errors:
+              - msg: User name is required
+                param: user_name
+                location: body
+              - msg: name should be alphabetic characters
+                param: user_name
+                location: body
+              - msg: First name is required
+                param: first_name
+                location: body
+              - msg: First name should be alphabetic characters
+                param: first_name
+                location: body
+              - msg: Last name is required
+                param: last_name
+                location: body
+              - msg: Last name should be alphabetic characters
+                param: last_name
+                location: body
+              - msg: Email is required
+                param: email
+                location: body
+              - msg: Input valid Email
+                param: email
+                location: body
+              - msg: Password is required
+                param: password_digest
+                location: body
+              - msg: Password must be at least 8 characters and maximum 16 character
+                param: password_digest
+                location: body
+              - msg: must contain a number
+                param: password_digest
+                location: body
+              - msg: User address is required
+                param: user_address
+                location: body
+              
+              
+
 
 #Get Request with path id
 paths:
+  /users:
+    post:
+      summary: Create new user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: json object
+                properties:
+                  status: 
+                    type: string
+                    description: success
+                  data: 
+                    type: object
+
+                    properties:
+                      user_id:
+                        type: string
+                        format: uuid
+
+                      user_name:
+                        type: string
+
+                      first_name:
+                        type: string
+                        
+
+                      last_name:
+                        type: string
+                        
+                      email:
+                        type: string
+                        format: email
+
+                  message:
+                    type: string
+                    description: user created successfully
+              example:
+                status: success
+                data:
+                  user_id: b7a12419-d9e7-4c7c-964b-982dcf3ad097
+                  user_name: ahmedelking
+                  first_name: ahmed
+                  last_name: saad
+                  email: ahm@yahoo.com
+                message: user created successfully
+                
+        'default':
+            $ref: '#/components/responses/createUserError'
+
+#Get Request with path id
+
   /users/{userId}:
     get:
       summary: Returns a user by ID.
@@ -77,21 +237,63 @@ paths:
           required: true
           description: The ID of the user to return.
           schema:
-            type: integer
+            type: string
             format: uuid
       security:
         - bearerAuth: []
       responses:
         '200':
-          description: json object.
+          description: ok
           content:
             application/json:
               schema:
+                type: json object
+                properties:
+                  status: 
+                    type: string
+                    description: success
+                  data: 
+                    type: object
+
+                    properties:
+
+                      user_name:
+                        type: string
+
+                      first_name:
+                        type: string
+                        
+
+                      last_name:
+                        type: string
+                        
+                      email:
+                        type: string
+                        format: email
+
+                      user_address:
+                        type: string
+
+                      phone:
+                        type: string
+                  message:
+                    type: string
+                    description: user retrieved successfully
+              example:
                 status: success
-                data: User object
-                  ref: '#/components/schemas/User'
+                data:
+                  user_name: ahmedelking
+                  first_name: ahmed
+                  last_name: saad
+                  email: ahm@yahoo.com
+                  user_address: 15 Shobra St,Cairo,Egypt
+                  phone: +201001656803
                 message: user retrieved successfully
-        '500':
-          description: unable show user:invalid input syntax for type uuid
+
+        default:
+            $ref: '#/components/responses/showUserError'
+
+        '401':
+            $ref: '#/components/responses/UnauthorizedError'   
         
 
