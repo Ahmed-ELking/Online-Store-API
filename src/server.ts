@@ -9,6 +9,10 @@ import RateLimit from 'express-rate-limit';
 
 import cors from 'cors';
 
+import swaggerUI from 'swagger-ui-express';
+
+import YAML from 'yamljs';
+
 import { errorMiddleware } from './middleware/errorMiddleware';
 
 import { logger } from './middleware/logger';
@@ -23,10 +27,14 @@ import userRoutes from './handlers/userRoutes';
 
 // import dashboardRoutes from './services/dashboardRoutes';
 
+const swaggerJsDoc = YAML.load('./api.yaml');
 
 const port = config.PORT || 8000;
 
 const app: express.Application = express();
+
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJsDoc));
+
 
 app.use(express.json());
 
@@ -58,7 +66,6 @@ userRoutes(app);
 // productRoutes(app);
 // orderRoutes(app);
 // dashboardRoutes(app);
-
 
 app.use(errorMiddleware);
 

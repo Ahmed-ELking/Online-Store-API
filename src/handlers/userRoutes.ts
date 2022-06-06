@@ -1,4 +1,5 @@
 import express, { Request, Response, NextFunction } from 'express';
+
 import jwt from 'jsonwebtoken';
 
 import { UserStore } from '../models/user';
@@ -6,6 +7,7 @@ import { UserStore } from '../models/user';
 import config from '../config';
 
 import { createUserValidator, validationMiddleware } from '../middleware/userValidation';
+
 import verifyAuthToken from '../middleware/verify';
 
 const store = new UserStore();
@@ -116,7 +118,6 @@ const authenticate = async (req: Request, res: Response, next: NextFunction) => 
         next(error);
     }
 }
-
 
 const userRoutes = (app: express.Application) => {
     app.get('/users', verifyAuthToken, index);

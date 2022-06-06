@@ -1,0 +1,97 @@
+openapi: 3.0.0
+info:
+  title: Online Store API
+  description: It exposes a RESTful API that will be used by the frontend developer
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - user_name
+        - first_name
+        - last_name
+        - email
+        - password_digest
+        - user_address
+        - phone
+      properties:
+        id:
+          format: UUID
+
+        user_name:
+          type: string
+          maxLength: 50
+
+        first_name:
+          type: string
+          maxLength: 50
+
+        last_name:
+          type: string
+          maxLength: 50
+
+        password_digest:
+          type: string
+          minLength: 8
+          maxLength: 16
+          description: Must contain a number, does't contain common word like ['123', 'password', 'god']
+
+        email:
+          type: string
+          format: email
+
+        user_address:
+          type: string
+          maxLength: 255
+
+        phone:
+          type: string
+          maxLength: 50
+          description: The mobile phone number must be supplied with the country code and therefore must start with "+".
+        
+        register_date:
+          type: Date
+          description: auto-generated current date of the user registration
+
+  securitySchemes:
+    bearerAuth:        
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    UnauthorizedError:
+      description: Login error:please try again
+
+#Get Request with path id
+paths:
+  /users/{userId}:
+    get:
+      summary: Returns a user by ID.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The ID of the user to return.
+          schema:
+            type: integer
+            format: uuid
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: json object.
+          content:
+            application/json:
+              schema:
+                status: success
+                data: User object
+                  ref: '#/components/schemas/User'
+                message: user retrieved successfully
+        '500':
+          description: unable show user:invalid input syntax for type uuid
+        
+
