@@ -15,11 +15,11 @@ components:
         - first_name
         - last_name
         - email
-        - password_digest
-        - user_address
+        - password
+        - address
         - phone
       properties:
-        user_id:
+        id:
           type: string
           format: uuid
         user_name:
@@ -34,7 +34,7 @@ components:
           type: string
           maxLength: 50
 
-        password_digest:
+        password:
           type: string
           minLength: 8
           maxLength: 16
@@ -44,7 +44,7 @@ components:
           type: string
           format: email
 
-        user_address:
+        address:
           type: string
           maxLength: 255
 
@@ -56,22 +56,25 @@ components:
         register_date:
           type: Date
           description: auto-generated current date of the user registration
-      #Does't show  
+        role:
+          type: string
+          description: admin or user
+      
       example:
         email: ahm@yahoo.com
         user_name: ahmedelking
         first_name: "ahmed"
         last_name: saad
-        password_digest: asssss1234
+        password: asssss1234
         phone: +201001656805
-        user_address: 15 Shobra St,Cairo,Egypt
+        address: 15 Shobra St,Cairo,Egypt
 
   Error:
-    type: json object
+    type: object
       properties:
-        status:
+        statusCode:
           type: integer
-        message:
+        messageData:
           type: string
     
 
@@ -88,83 +91,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: '#/components/Error'
           example:
             status: 401
             message: Login error:please try again
     
-    showUserError:
-      description: unable show user
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            status: 500
-            message: unable show user + Error
-    
-    createUserError:
-      description: unable create user
-      content:
-        application/json:
-          schema:
-            type: object
-              proprieties:
-                errors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      msg: 
-                        type: string
-                      param:
-                        type: string
-                      location:
-                        type: string
-                
-          example:
-            errors:
-              - msg: User name is required
-                param: user_name
-                location: body
-              - msg: name should be alphabetic characters
-                param: user_name
-                location: body
-              - msg: First name is required
-                param: first_name
-                location: body
-              - msg: First name should be alphabetic characters
-                param: first_name
-                location: body
-              - msg: Last name is required
-                param: last_name
-                location: body
-              - msg: Last name should be alphabetic characters
-                param: last_name
-                location: body
-              - msg: Email is required
-                param: email
-                location: body
-              - msg: Input valid Email
-                param: email
-                location: body
-              - msg: Password is required
-                param: password_digest
-                location: body
-              - msg: Password must be at least 8 characters and maximum 16 character
-                param: password_digest
-                location: body
-              - msg: must contain a number
-                param: password_digest
-                location: body
-              - msg: User address is required
-                param: user_address
-                location: body
-              
-              
-
-
-#Get Request with path id
+#Post Request to create new User
 paths:
   /users:
     post:
@@ -185,46 +117,61 @@ paths:
               schema:
                 type: json object
                 properties:
-                  status: 
-                    type: string
-                    description: success
+                  statusCode: 
+                    type: integer
                   data: 
                     type: object
 
                     properties:
-                      user_id:
+                      id:
                         type: string
                         format: uuid
 
                       user_name:
                         type: string
-
-                      first_name:
-                        type: string
-                        
-
-                      last_name:
-                        type: string
                         
                       email:
                         type: string
                         format: email
+                      
+                      role:
+                        type: string
+                      
+                      token: 
+                        type: jwt token
 
                   message:
                     type: string
                     description: user created successfully
+
               example:
-                status: success
+                statusCode: 200
                 data:
-                  user_id: b7a12419-d9e7-4c7c-964b-982dcf3ad097
+                  id: b7a12419-d9e7-4c7c-964b-982dcf3ad097
                   user_name: ahmedelking
-                  first_name: ahmed
-                  last_name: saad
                   email: ahm@yahoo.com
-                message: user created successfully
+                  role: user
+                  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJfaWQiOiJlYjdiNjEyNC01N2FmLTQ2MWItOTA5OC0xYzA5MjNlMmUwMmIiLCJ1c2VyX25hbWUiOiJhaG1lZGVsa2luZyIsImZpcnN0X25hbWUiOiJhaG1lZCIsImxhc3RfbmFtZSI6InNhYWQiLCJlbWFpbCI6ImFobUB5YWhvby5jb20ifSwiaWF0IjoxNjU0NDU5MzU2fQ.rl6oZ_qMO7gqnB7suB-SJHPM5AvZLxaxERzSeaq8Fbo
+                messageData: user created successfully
                 
-        'default':
-            $ref: '#/components/responses/createUserError'
+        '400':
+            description: unable create user
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/Error'
+                example:
+                  statusCode: 400
+                  messageData: User name is required
+        '500':
+            description: internal server error
+            content:
+              application/json:
+                schema:
+                    $ref: '#/components/Error'
+                example:
+                  statusCode: 500
+                  messageData: unable create user + error 
 
 #Get Request with path id
 
@@ -249,9 +196,9 @@ paths:
               schema:
                 type: json object
                 properties:
-                  status: 
+                  statusCode: 
                     type: string
-                    description: success
+                    description: 200
                   data: 
                     type: object
 
@@ -271,29 +218,35 @@ paths:
                         type: string
                         format: email
 
-                      user_address:
+                      address:
                         type: string
 
                       phone:
                         type: string
-                  message:
+
+                  messageData:
                     type: string
                     description: user retrieved successfully
               example:
-                status: success
+                statusCode: 200
                 data:
                   user_name: ahmedelking
                   first_name: ahmed
                   last_name: saad
                   email: ahm@yahoo.com
-                  user_address: 15 Shobra St,Cairo,Egypt
+                  address: 15 Shobra St,Cairo,Egypt
                   phone: +201001656803
-                message: user retrieved successfully
-
-        default:
-            $ref: '#/components/responses/showUserError'
+                messageData: user retrieved successfully
 
         '401':
-            $ref: '#/components/responses/UnauthorizedError'   
+            $ref: '#/components/responses/UnauthorizedError'  
         
-
+        default:
+            description: unable show user
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/Error'
+                example:
+                  statusCOde: 400
+                  messageData: unable show user + error
